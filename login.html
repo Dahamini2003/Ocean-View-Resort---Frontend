@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Login — Ocean View Resort</title>
+  <link rel="stylesheet" href="./styles.css"/>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">OV</div>
+    <div>
+      <div class="title">Ocean View Resort</div>
+      <div class="subtitle">Login</div>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <section class="panel">
+    <h2>Login</h2>
+    <p class="muted">Enter your username and password.</p>
+
+    <section id="toast" class="toast" hidden></section>
+
+    <form id="loginForm" class="grid2">
+      <label class="field">
+        <span>Username</span>
+        <input id="username" type="text" placeholder="admin" required />
+      </label>
+
+      <label class="field">
+        <span>Password</span>
+        <input id="password" type="password" placeholder="admin123" required />
+      </label>
+
+      <div class="actions">
+        <button class="btn" type="submit">Login</button>
+      </div>
+    </form>
+
+    <pre id="helpBox" class="helpBox" hidden></pre>
+  </section>
+</main>
+
+<footer class="footer">Ocean View Resort ©</footer>
+
+<script src="./common.js"></script>
+<script src="./login.js"></script>
+</body>
+</html>
