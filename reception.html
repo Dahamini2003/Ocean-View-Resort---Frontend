@@ -1,0 +1,772 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Reception Dashboard — Ocean View Resort</title>
+
+  <!-- ✅ Combined: HTML + CSS (ONLY design + Help tab content added) -->
+  <style>
+    :root{
+      /* keep your Ocean + Gold colors */
+      --oceanDeep:#0b3f52;
+      --ocean:#0f6a83;
+      --oceanLight:#2aa6b2;
+      --gold:#d4ab55;
+      --sand:#fff6e6;
+
+      --ink:#0b2430;
+      --muted:#57707c;
+
+      --line: rgba(11,36,48,.10);
+      --shadow: 0 26px 70px rgba(0,0,0,.16);
+      --shadow2: 0 14px 30px rgba(0,0,0,.12);
+
+      --radius:18px;
+      --radius2:14px;
+      --container:1200px;
+
+      --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+
+      /* ✅ Set paths (change if needed) */
+      --bgImage: url("./images/slider.jpg");
+      --logoImage: url("./images/logo.png");
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+
+    body{
+      margin:0;
+      font-family:var(--font);
+      color:var(--ink);
+      background:#eef6f9;
+      overflow-x:hidden;
+    }
+
+    /* Background image */
+    body::before{
+      content:"";
+      position: fixed;
+      inset: 0;
+      background: var(--bgImage) center/cover no-repeat;
+      z-index: -3;
+      transform: scale(1.03);
+    }
+    /* Light overlay for readability */
+    body::after{
+      content:"";
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background:
+        radial-gradient(1100px 650px at 18% 18%, rgba(42,166,178,.18), transparent 62%),
+        radial-gradient(1100px 720px at 78% 20%, rgba(212,171,85,.14), transparent 62%),
+        linear-gradient(180deg, rgba(255,255,255,.58), rgba(255,255,255,.12));
+    }
+
+    /* ---------- Top Bar ---------- */
+    .topbar{
+      position: sticky;
+      top:0;
+      z-index: 50;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 14px;
+
+      padding: 12px 18px;
+      background: rgba(255,255,255,.66);
+      border-bottom: 1px solid rgba(11,36,48,.10);
+      backdrop-filter: blur(14px) saturate(140%);
+      -webkit-backdrop-filter: blur(14px) saturate(140%);
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      min-width: 260px;
+    }
+
+    /* ✅ Logo without any bg panel */
+    .logo{
+      width: 46px;
+      height: 46px;
+      background: var(--logoImage) center/contain no-repeat;
+      border: none;
+      box-shadow: none;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,.18));
+      border-radius: 0;
+      overflow: visible;
+      color: transparent; /* keeps your "OV" hidden if image exists */
+      user-select:none;
+      flex: 0 0 auto;
+    }
+
+    .title{
+      font-weight: 900;
+      letter-spacing: .2px;
+      font-size: 16px;
+      line-height: 1.1;
+      color: var(--ink);
+    }
+    .subtitle{
+      margin-top: 4px;
+      font-size: 12px;
+      color: rgba(11,36,48,.62);
+    }
+
+    .session{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content:flex-end;
+    }
+    .sessionInfo{
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.70);
+      border: 1px solid rgba(11,36,48,.10);
+      color: rgba(11,36,48,.78);
+      font-weight: 700;
+      font-size: 12px;
+      box-shadow: 0 10px 18px rgba(0,0,0,.08);
+      max-width: 48vw;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ---------- Layout ---------- */
+    .container{
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 22px 16px 26px;
+      min-height: calc(100vh - 70px - 56px);
+    }
+
+    /* Toast */
+    .toast{
+      border: 1px solid rgba(11,36,48,.12);
+      background: rgba(255,255,255,.72);
+      color: var(--ink);
+      border-radius: var(--radius2);
+      padding: 10px 12px;
+      margin: 0 0 14px;
+      box-shadow: 0 10px 22px rgba(0,0,0,.10);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    /* ---------- Tabs ---------- */
+    .tabs{
+      display:flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 10px;
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.58);
+      border: 1px solid rgba(255,255,255,.72);
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(16px) saturate(140%);
+      -webkit-backdrop-filter: blur(16px) saturate(140%);
+      margin-bottom: 14px;
+    }
+
+    .tab{
+      border: 1px solid rgba(11,36,48,.12);
+      background: rgba(255,255,255,.74);
+      color: rgba(11,36,48,.80);
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-weight: 900;
+      letter-spacing: .15px;
+      cursor:pointer;
+      transition: transform .08s ease, box-shadow .2s ease, background .2s ease;
+      box-shadow: 0 10px 18px rgba(0,0,0,.08);
+    }
+    .tab:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 14px 22px rgba(0,0,0,.10);
+    }
+    .tab.isActive{
+      border-color: rgba(42,166,178,.30);
+      background: linear-gradient(135deg, rgba(15,106,131,.18), rgba(212,171,85,.14));
+      color: rgba(11,36,48,.92);
+    }
+
+    /* ---------- Panels ---------- */
+    .panel{
+      border-radius: calc(var(--radius) + 2px);
+      background: rgba(255,255,255,.62);
+      border: 1px solid rgba(255,255,255,.74);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+      padding: 16px;
+    }
+    .panel[hidden]{ display:none !important; }
+
+    /* Split layout */
+    .split{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items:start;
+    }
+
+    /* Cards */
+    .card{
+      border-radius: var(--radius);
+      border: 1px solid rgba(11,36,48,.10);
+      background: rgba(255,255,255,.76);
+      box-shadow: 0 14px 30px rgba(0,0,0,.10);
+      padding: 14px;
+    }
+
+    .card h3{
+      margin: 0 0 6px;
+      font-size: 16px;
+      letter-spacing: .2px;
+    }
+
+    .muted{ color: rgba(11,36,48,.62); }
+
+    .sep{
+      border: none;
+      height: 1px;
+      background: rgba(11,36,48,.10);
+      margin: 12px 0;
+    }
+
+    /* ---------- Forms ---------- */
+    .grid2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .field{
+      display:flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 0;
+    }
+    .field span{
+      font-size: 12px;
+      font-weight: 900;
+      color: rgba(11,36,48,.74);
+      letter-spacing: .2px;
+    }
+    .field.full{ grid-column: 1 / -1; }
+
+    .row{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      min-width: 0;
+    }
+    .grow{ flex: 1 1 auto; min-width: 0; }
+
+    input, select{
+      height: 46px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(11,36,48,.12);
+      background: rgba(255,255,255,.92);
+      color: var(--ink);
+      outline:none;
+      box-shadow: 0 10px 18px rgba(0,0,0,.08);
+      transition: border-color .2s ease, box-shadow .2s ease, transform .06s ease;
+    }
+    input::placeholder{ color: rgba(11,36,48,.42); }
+    input:focus, select:focus{
+      border-color: rgba(42,166,178,.70);
+      box-shadow: 0 0 0 4px rgba(42,166,178,.18), 0 14px 22px rgba(0,0,0,.10);
+    }
+    input:active{ transform: translateY(1px); }
+
+    /* ---------- Buttons ---------- */
+    .actions{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .btn{
+      height: 46px;
+      padding: 0 16px;
+      border-radius: 14px;
+      border: 1px solid transparent;
+      cursor:pointer;
+
+      font-weight: 900;
+      letter-spacing: .2px;
+      color:#fff;
+
+      background: linear-gradient(135deg, var(--ocean), var(--gold));
+      box-shadow: 0 16px 28px rgba(0,0,0,.18);
+      transition: transform .08s ease, box-shadow .2s ease, filter .2s ease;
+    }
+    .btn:hover{ filter: brightness(1.05); box-shadow: 0 20px 36px rgba(0,0,0,.20); }
+    .btn:active{ transform: translateY(1px); }
+
+    .btnGhost{
+      background: rgba(255,255,255,.74);
+      color: rgba(11,36,48,.88);
+      border: 1px solid rgba(11,36,48,.12);
+      box-shadow: 0 12px 22px rgba(0,0,0,.10);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .btnGhost:hover{ background: rgba(255,255,255,.86); }
+
+    .btnDanger{
+      background: linear-gradient(135deg, #d34b4b, #8c1f1f);
+      box-shadow: 0 16px 28px rgba(140,31,31,.22);
+    }
+
+    /* ---------- Tables ---------- */
+    .tableWrap{
+      width:100%;
+      overflow:auto;
+      border-radius: var(--radius);
+      border: 1px solid rgba(11,36,48,.10);
+      background: rgba(255,255,255,.78);
+      box-shadow: 0 12px 24px rgba(0,0,0,.08);
+    }
+
+    table{
+      width:100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      min-width: 980px;
+    }
+
+    thead th{
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: rgba(255,255,255,.92);
+      border-bottom: 1px solid rgba(11,36,48,.10);
+      padding: 12px 12px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: rgba(11,36,48,.70);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    tbody td{
+      padding: 12px 12px;
+      border-bottom: 1px solid rgba(11,36,48,.08);
+      color: rgba(11,36,48,.86);
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    tbody tr:hover{
+      background: rgba(42,166,178,.08);
+    }
+
+    /* ---------- Help Box ---------- */
+    .helpBox{
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: var(--radius);
+      border: 1px dashed rgba(11,36,48,.18);
+      background: rgba(255,255,255,.70);
+      color: rgba(11,36,48,.92);
+      overflow:auto;
+      max-height: 340px;
+      box-shadow: 0 12px 24px rgba(0,0,0,.08);
+      white-space: pre-wrap; /* ✅ readable on long lines */
+      line-height: 1.5;
+    }
+
+    /* ---------- Footer ---------- */
+    .footer{
+      border-top: 1px solid rgba(11,36,48,.10);
+      color: rgba(11,36,48,.70);
+      text-align:center;
+      padding: 16px 10px;
+      background: rgba(255,255,255,.62);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 980px){
+      .split{ grid-template-columns: 1fr; }
+      .grid2{ grid-template-columns: 1fr; }
+      .field.full{ grid-column: auto; }
+      .sessionInfo{ max-width: 70vw; }
+      .container{ padding: 16px 12px 22px; }
+    }
+
+    @media (max-width: 520px){
+      .topbar{ padding: 10px 12px; }
+      .title{ font-size: 15px; }
+      .tabs{ gap: 8px; }
+      .tab{ width: 100%; text-align:left; }
+      .btn{ width: 100%; }
+      .btnGhost{ width: 100%; }
+    }
+
+    ::selection{ background: rgba(42,166,178,.22); }
+
+    /* ======================================================
+   ✅ Bill Receipt = Invoice layout (LEFT label, RIGHT price)
+   Backend unchanged. Only display.
+====================================================== */
+
+#tabBill #billPrintArea.invReceipt{
+  padding: 0 !important;
+  border-radius: calc(var(--radius) + 2px) !important;
+  overflow: hidden;
+  border: 1px solid rgba(11,36,48,.10) !important;
+  background: rgba(255,255,255,.92) !important;
+  box-shadow: var(--shadow2) !important;
+}
+
+/* Header like invoice */
+#tabBill #billPrintArea.invReceipt .invHead{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:16px;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, rgba(42,166,178,.14), rgba(212,171,85,.10));
+  border-bottom: 1px solid rgba(11,36,48,.10);
+}
+#tabBill #billPrintArea.invReceipt .invTitle{
+  font-weight: 900;
+  font-size: 20px;
+  color: rgba(11,36,48,.95);
+}
+#tabBill #billPrintArea.invReceipt .invSub{
+  margin-top: 2px;
+  color: rgba(11,36,48,.62);
+  font-weight: 800;
+}
+#tabBill #billPrintArea.invReceipt .invMeta{
+  text-align:right;
+  color: rgba(11,36,48,.90);
+  font-weight: 900;
+}
+#tabBill #billPrintArea.invReceipt .invMeta .k{
+  color: rgba(11,36,48,.70);
+  font-weight: 900;
+}
+
+/* Divider */
+#tabBill #billPrintArea.invReceipt .invLine{
+  height: 1px;
+  background: rgba(11,36,48,.10);
+}
+
+/* ✅ 2-column grid */
+#tabBill #billPrintArea.invReceipt .invGrid{
+  display:grid;
+  grid-template-columns: 1fr auto; /* left label | right value */
+  gap: 6px 18px;
+  padding: 16px 18px 18px;
+}
+
+#tabBill #billPrintArea.invReceipt .invK{
+  color: rgba(11,36,48,.72);
+  font-weight: 900;
+}
+#tabBill #billPrintArea.invReceipt .invV{
+  text-align:right;
+  white-space: nowrap;
+  color: rgba(11,36,48,.95);
+  font-weight: 900;
+}
+
+/* Highlight Balance (Grand total style) */
+#tabBill #billPrintArea.invReceipt .invK.isTotal,
+#tabBill #billPrintArea.invReceipt .invV.isTotal{
+  padding-top: 12px;
+  margin-top: 6px;
+  border-top: 1px dashed rgba(11,36,48,.18);
+}
+#tabBill #billPrintArea.invReceipt .invV.isTotal{
+  font-size: 20px;
+}
+
+/* Print only receipt */
+@media print{
+  body::before, body::after{ display:none !important; }
+  .topbar, .tabs, .footer{ display:none !important; }
+  #tabBill .row{ display:none !important; }
+  #tabBill{ display:block !important; }
+  #billPrintArea{ display:block !important; }
+  #tabBill #billPrintArea.invReceipt{
+    box-shadow:none !important;
+    border:none !important;
+    background:#fff !important;
+  }
+}
+  </style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">OV</div>
+    <div>
+      <div class="title">Reception Dashboard</div>
+      <div class="subtitle">Reservations • Bill • Help</div>
+    </div>
+  </div>
+  <div class="session">
+    <div id="sessionInfo" class="sessionInfo"></div>
+    <button class="btn btnGhost" id="btnLogout" type="button">Logout</button>
+  </div>
+</header>
+
+<main class="container">
+  <section id="toast" class="toast" hidden></section>
+
+  <nav class="tabs">
+    <button class="tab isActive" data-tab="tabAdd">Add Reservation</button>
+    <button class="tab" data-tab="tabList">Reservations List</button>
+    <button class="tab" data-tab="tabBill">Bill & Print</button>
+    <button class="tab" data-tab="tabHelp">Help</button>
+    <button class="tab" data-tab="tabExit">Exit</button>
+  </nav>
+
+  <!-- ADD -->
+  <section id="tabAdd" class="panel">
+    <div class="split">
+      <div class="card">
+        <h3>Add New Reservation</h3>
+        <p class="muted">Reservation No will auto-fill. If contact exists, guest will be reused.</p>
+
+        <form id="formAdd" class="grid2">
+          <label class="field">
+            <span>Reservation No</span>
+            <div class="row">
+              <input id="resNo" class="grow" placeholder="Auto" />
+              <button class="btn btnGhost" id="btnNewNo" type="button">New</button>
+            </div>
+          </label>
+
+          <label class="field">
+            <span>Room Type</span>
+            <select id="roomType" required><option value="">-- select --</option></select>
+          </label>
+
+          <label class="field">
+            <span>Check-in</span>
+            <input id="checkIn" type="date" required/>
+          </label>
+
+          <label class="field">
+            <span>Check-out</span>
+            <input id="checkOut" type="date" required/>
+          </label>
+
+          <label class="field">
+            <span>Guest Name</span>
+            <input id="guestName" placeholder="Type guest name"/>
+          </label>
+
+          <label class="field">
+            <span>Contact No</span>
+            <input id="contactNo" placeholder="Enter contact number" required/>
+          </label>
+
+          <label class="field full">
+            <span>Address</span>
+            <input id="address" placeholder="Enter address"/>
+          </label>
+
+          <div class="actions">
+            <button class="btn" type="submit">Save Reservation</button>
+            <button class="btn btnGhost" id="btnClearAdd" type="button">Clear</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3>Result</h3>
+        <div id="addMsg" class="muted">No reservation created yet.</div>
+
+        <hr class="sep"/>
+
+        <h3>Quick Actions</h3>
+        <div class="actions">
+          <button class="btn btnGhost" id="btnGoList" type="button">Open List</button>
+          <button class="btn btnGhost" id="btnGoBill" type="button">Open Bill</button>
+        </div>
+        <div class="muted" style="margin-top:10px;">After saving, the reservation will be ready in the list.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIST -->
+  <section id="tabList" class="panel" hidden>
+    <div class="panelHead" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+      <div>
+        <h2 style="margin:0 0 6px;">Reservations List</h2>
+        <div class="muted">Filter by room type + status. Completed = check-out date is before today.</div>
+      </div>
+      <button class="btn btnGhost" id="btnRefreshList" type="button">Refresh</button>
+    </div>
+
+    <div class="card" style="margin-top:12px;">
+      <div class="grid2">
+        <label class="field">
+          <span>Status</span>
+          <select id="filterStatus">
+            <option value="all">All</option>
+            <option value="active">Active</option>
+            <option value="upcoming">Upcoming</option>
+            <option value="completed">Completed</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Room Type</span>
+          <select id="filterRoomType"><option value="">All Room Types</option></select>
+        </label>
+
+        <label class="field full">
+          <span>Search (Reservation No / Guest Name / Contact)</span>
+          <input id="filterSearch" placeholder="Type to search..." />
+        </label>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px;">
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Reservation No</th>
+              <th>Guest</th>
+              <th>Contact</th>
+              <th>Room Type</th>
+              <th>Check-in</th>
+              <th>Check-out</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="resTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- BILL -->
+  <section id="tabBill" class="panel" hidden>
+    <h2 style="margin:0 0 10px;">Calculate & Print Bill</h2>
+    <div class="card">
+      <div class="row">
+        <input id="billNo" class="grow" placeholder="Reservation No (ex: R20260225-0001)" />
+        <button class="btn" id="btnBill" type="button">Get Bill</button>
+        <button class="btn btnGhost" id="btnPrint" type="button" disabled>Print</button>
+      </div>
+      <div id="billPrintArea" class="card" style="margin-top:12px; display:none;"></div>
+    </div>
+  </section>
+
+  <!-- HELP -->
+  <section id="tabHelp" class="panel" hidden>
+    <h2 style="margin:0 0 10px;">Help (Guidelines for New Staff)</h2>
+    <button class="btn btnGhost" id="btnHelpApi" type="button">Load Help from API</button>
+
+    <!-- ✅ Updated: default help content added (API can still overwrite) -->
+    <pre id="helpText" class="helpBox">5. Help Section (Guidelines for New Staff)
+
+System Purpose
+- This Reception Dashboard is used to:
+  • Add new room reservations
+  • View and manage reservations list
+  • Calculate bills and print invoices
+  • Read help instructions
+  • Logout safely when work is finished
+
+
+A) Login & Safety
+1) Enter your username and password on the Login page.
+2) Do not share your password with anyone.
+3) Always click Logout when you finish your shift.
+
+
+B) Add Reservation (Add Reservation Tab)
+Steps:
+1) Click Add Reservation tab.
+2) Click New if you want a new reservation number.
+3) Select Room Type.
+4) Select Check-in date and Check-out date.
+5) Enter Guest Name.
+6) Enter Contact No (required).
+7) Enter Address (optional).
+8) Click Save Reservation.
+
+Notes:
+- Reservation number is auto generated.
+- If the contact number already exists, the system may reuse the guest details.
+
+
+C) View Reservations (Reservations List Tab)
+How to use filters:
+- Status
+  • Active = currently staying
+  • Upcoming = future reservations
+  • Completed = check-out date is before today
+- Room Type = filter by selected room type
+- Search = type reservation number / guest name / contact number
+
+Tips:
+- Click Refresh to load latest list.
+- Always double check dates before confirming a booking.
+
+
+D) Bill & Print (Bill & Print Tab)
+Steps:
+1) Open Bill & Print tab.
+2) Enter Reservation No (example: R20260225-0001).
+3) Click Get Bill.
+4) Check the bill details.
+5) Click Print to print the invoice.
+
+Important:
+- Print button will be enabled only after bill is loaded.
+
+F) Exit / Logout (Exit Tab)
+Steps:
+1) Click Exit tab.
+2) Click Logout.
+3) Close the browser tab after logout.
+
+
+Common Troubleshooting
+- Can’t find a reservation: Go to list tab and search by contact number.
+- Bill not showing: Check reservation number format and try again.
+- Wrong dates: Always confirm check-in/check-out before saving.</pre>
+  </section>
+
+  <!-- EXIT -->
+  <section id="tabExit" class="panel" hidden>
+    <h2 style="margin:0 0 8px;">Exit System</h2>
+    <p class="muted">Use Logout then close the tab.</p>
+    <div class="actions">
+      <button class="btn btnDanger" id="btnExitLogout" type="button">Logout</button>
+      <button class="btn btnGhost" id="btnExitTry" type="button">Try Close Tab</button>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">Ocean View Resort ©</footer>
+
+<script src="./common.js"></script>
+<script src="./reception.js"></script>
+</body>
+</html>
