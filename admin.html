@@ -1,0 +1,868 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Admin Dashboard — Ocean View Resort</title>
+
+  <style>
+    :root{
+      --bgA:#d9efff;
+      --bgB:#f7fbff;
+      --bgC:#fff1dd;
+
+      --panel: rgba(255,255,255,.72);
+      --card:  rgba(255,255,255,.78);
+
+      --ink:#0f172a;
+      --muted:rgba(15,23,42,.65);
+
+      --line: rgba(15,23,42,.12);
+
+      --accent:#2dd4bf;
+      --accent2:#60a5fa;
+
+      --radius:18px;
+
+      --shadow: 0 20px 60px rgba(2, 20, 60, .18);
+      --shadowSoft: 0 12px 30px rgba(2, 20, 60, .12);
+
+      --container: 1180px;
+
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
+
+      --bgImage: url("./bg.jpg");
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family:var(--font);
+      color:var(--ink);
+      line-height:1.45;
+
+      background-image:
+        linear-gradient(135deg, rgba(217,239,255,.92), rgba(247,251,255,.88) 45%, rgba(255,241,221,.82)),
+        var(--bgImage);
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+
+    [hidden]{ display:none !important; }
+    .muted{ color:var(--muted); }
+    .row{ display:flex; align-items:center; gap:10px; }
+    .grow{ flex:1; }
+    hr{ border:0; border-top:1px solid var(--line); margin:16px 0; }
+
+    .topbar{
+      position: sticky;
+      top:0;
+      z-index:50;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:14px 18px;
+
+      background: rgba(255,255,255,.78);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom:1px solid rgba(15,23,42,.10);
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .logo{
+      width:60px;
+      height:60px;
+      border-radius:18px;
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+      background: rgba(255,255,255,.92);
+      user-select:none;
+    }
+    .logo img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      padding:6px;
+      display:block;
+    }
+
+    .title{ font-weight:900; font-size:18px; }
+    .subtitle{ font-size:13px; color: rgba(15,23,42,.55); margin-top:2px; }
+
+    .session{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .sessionInfo{
+      padding:8px 12px;
+      border:1px solid rgba(15,23,42,.12);
+      border-radius:999px;
+      background: rgba(255,255,255,.65);
+      color: rgba(15,23,42,.65);
+      font-size:12px;
+      max-width: 52vw;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .container{
+      max-width: var(--container);
+      margin: 18px auto 0;
+      padding: 0 14px 110px;
+    }
+
+    .panel{
+      margin-top:14px;
+      padding:16px;
+      border-radius: var(--radius);
+      border:1px solid rgba(15,23,42,.12);
+      background: var(--panel);
+      box-shadow: var(--shadowSoft);
+    }
+    .panel h2{ margin:0; font-size:28px; letter-spacing:.2px; }
+    .panel h3{ margin:0 0 8px; font-size:16px; }
+
+    .card{
+      border:1px solid rgba(15,23,42,.12);
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: var(--shadowSoft);
+      padding:14px;
+    }
+
+    .tabs{
+      display:flex;
+      gap:8px;
+      padding:12px;
+      border:1px solid rgba(15,23,42,.12);
+      border-radius: 26px;
+      background: rgba(255,255,255,.70);
+      box-shadow: var(--shadowSoft);
+      overflow:auto;
+    }
+    .tab{
+      border:1px solid rgba(15,23,42,.12);
+      background: rgba(255,255,255,.78);
+      color: rgba(15,23,42,.70);
+      padding:12px 18px;
+      border-radius:999px;
+      cursor:pointer;
+      font-weight:800;
+      font-size:14px;
+      white-space:nowrap;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+    }
+    .tab:hover{ transform: translateY(-1px); background: rgba(255,255,255,.95); }
+    .tab.isActive{
+      color: #0b1220;
+      border-color: rgba(45,212,191,.55);
+      background: linear-gradient(135deg, rgba(45,212,191,.95), rgba(96,165,250,.85));
+      box-shadow: 0 10px 26px rgba(96,165,250,.18);
+    }
+
+    .cards{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap:12px;
+    }
+    .stat{
+      border:1px solid rgba(15,23,42,.12);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.72);
+      padding:16px;
+      position:relative;
+      overflow:hidden;
+      min-height:110px;
+    }
+    .stat .k{ color: rgba(15,23,42,.55); font-size:14px; font-weight:800; }
+    .stat .v{ font-size:40px; font-weight:900; margin-top:8px; }
+
+    .split{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:12px;
+      align-items:start;
+    }
+    .grid2{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap:12px;
+    }
+    .field{ display:flex; flex-direction:column; gap:6px; }
+    .field > span{ color: rgba(15,23,42,.65); font-size:12px; font-weight:800; }
+    .field.full{ grid-column: 1 / -1; }
+
+    input, select, textarea{
+      width:100%;
+      padding:12px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(15,23,42,.12);
+      background: rgba(255,255,255,.88);
+      color: var(--ink);
+      outline:none;
+    }
+
+    .btn{
+      border:1px solid rgba(45,212,191,.55);
+      background: linear-gradient(135deg, rgba(45,212,191,.95), rgba(96,165,250,.85));
+      color:#0b1220;
+      font-weight:900;
+      padding:12px 16px;
+      border-radius: 14px;
+      cursor:pointer;
+      box-shadow: 0 12px 26px rgba(96,165,250,.18);
+    }
+    .btnGhost{
+      border:1px solid rgba(15,23,42,.14);
+      background: rgba(255,255,255,.78);
+      color: rgba(15,23,42,.85);
+      font-weight:900;
+      box-shadow: none;
+    }
+    .btnDanger{
+      border:1px solid rgba(239,68,68,.45);
+      background: linear-gradient(135deg, rgba(239,68,68,.92), rgba(248,113,113,.85));
+      color:#1f0a0a;
+      box-shadow: 0 12px 26px rgba(239,68,68,.14);
+    }
+
+    .tableWrap{
+      overflow:auto;
+      border-radius: var(--radius);
+      border:1px solid rgba(15,23,42,.12);
+      background: rgba(255,255,255,.70);
+    }
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      min-width: 760px;
+    }
+    thead th{
+      text-align:left;
+      font-size:12px;
+      color: rgba(15,23,42,.70);
+      background: rgba(255,255,255,.92);
+      border-bottom: 1px solid rgba(15,23,42,.10);
+      padding:11px 12px;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    tbody td{
+      padding:11px 12px;
+      border-bottom: 1px solid rgba(15,23,42,.08);
+      color: rgba(15,23,42,.90);
+      font-size:13px;
+      vertical-align: middle;
+    }
+
+    .helpBox{
+      margin-top:12px;
+      border:1px solid rgba(15,23,42,.12);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.85);
+      padding:14px;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      color: rgba(15,23,42,.88);
+      white-space: pre-wrap;
+      line-height:1.5;
+      overflow:auto;
+      min-height: 160px;
+    }
+
+    .toast{
+      position:fixed;
+      right:16px;
+      top:76px;
+      max-width:min(520px, calc(100vw - 32px));
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid rgba(15,23,42,.12);
+      background: rgba(255,255,255,.90);
+      box-shadow: var(--shadow);
+      color: rgba(15,23,42,.90);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index:70;
+      white-space:pre-wrap;
+    }
+
+    .footer{
+      position: fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      z-index:45;
+      background: rgba(255,255,255,.62);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(15,23,42,.10);
+    }
+    .footerInner{
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 14px;
+      text-align:center;
+      color: rgba(15,23,42,.55);
+      font-size:14px;
+      font-weight:700;
+    }
+
+    /* ✅ MODAL FIX: support both .isOpen and .show */
+    .modalBackdrop{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      background: rgba(2, 10, 30, .35);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 80;
+    }
+    .modalBackdrop.isOpen,
+    .modalBackdrop.show{ display:flex; }
+
+    .modal{
+      width:min(860px, 100%);
+      border-radius: calc(var(--radius) + 2px);
+      border:1px solid rgba(15,23,42,.12);
+      background: rgba(255,255,255,.88);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .modalHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding: 14px 16px;
+      border-bottom:1px solid rgba(15,23,42,.10);
+      background: rgba(255,255,255,.95);
+    }
+    .modalTitle{ font-weight:900; }
+    .modalBody{ padding: 14px 16px 16px; }
+
+    /* ===== Help section styles ===== */
+    .helpTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top: 10px;
+    }
+
+    .helpCols{
+      margin-top: 14px;
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap:12px;
+    }
+
+    .helpCard{
+      border:1px solid rgba(15,23,42,.12);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.78);
+      box-shadow: var(--shadowSoft);
+      padding:14px;
+    }
+
+    .helpCard.full{
+      grid-column: 1 / -1;
+    }
+
+    .helpCard h3{
+      margin:0 0 10px;
+      font-size:16px;
+      font-weight:900;
+    }
+
+    .helpCard ul,
+    .helpCard ol{
+      margin:0;
+      padding-left:18px;
+      color: rgba(15,23,42,.85);
+    }
+
+    .helpCard li{
+      margin:6px 0;
+    }
+
+    .badge{
+      display:inline-block;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid rgba(15,23,42,.12);
+      background: rgba(96,165,250,.10);
+      color: rgba(15,23,42,.75);
+      font-weight:800;
+      font-size:12px;
+    }
+
+    @media (max-width: 980px){
+      .cards{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .split{ grid-template-columns: 1fr; }
+      .helpCols{ grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px){
+      .grid2{ grid-template-columns: 1fr; }
+      .cards{ grid-template-columns: 1fr; }
+      .sessionInfo{ max-width: 70vw; }
+      .topbar{ padding: 12px 12px; }
+      .panel{ padding: 14px; }
+      .tab{ padding:10px 12px; }
+    }
+  </style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">
+      <img src="images/logo.png" alt="Ocean View Resort Logo">
+    </div>
+    <div>
+      <div class="title">Admin Dashboard</div>
+      <div class="subtitle">Analytics • Manage Reservations • Guests • Room Types • Users</div>
+    </div>
+  </div>
+  <div class="session">
+    <div id="sessionInfo" class="sessionInfo"></div>
+    <button class="btn btnGhost" id="btnLogout" type="button">Logout</button>
+  </div>
+</header>
+
+<main class="container">
+  <section id="toast" class="toast" hidden></section>
+
+  <nav class="tabs">
+    <button class="tab isActive" data-tab="tabDash">Dashboard</button>
+    <button class="tab" data-tab="tabAdd">Add Reservation</button>
+    <button class="tab" data-tab="tabManage">Update/Delete Reservations</button>
+    <button class="tab" data-tab="tabGuests">Guest Details</button>
+    <button class="tab" data-tab="tabRooms">Room Types (CRUD)</button>
+    <button class="tab" data-tab="tabUsers">Users (CRUD)</button>
+    <button class="tab" data-tab="tabHelp">Help</button>
+  </nav>
+
+  <!-- DASH -->
+  <section id="tabDash" class="panel">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+      <div>
+        <h2>Simple Analysis</h2>
+        <div class="muted">Quick counts by status + room type. (No JSON)</div>
+      </div>
+      <button class="btn btnGhost" id="btnDashRefresh" type="button">Refresh</button>
+    </div>
+
+    <div class="cards" style="margin-top:12px;">
+      <div class="stat"><div class="k">Total Reservations</div><div class="v" id="kTotal">-</div></div>
+      <div class="stat"><div class="k">Active</div><div class="v" id="kActive">-</div></div>
+      <div class="stat"><div class="k">Upcoming</div><div class="v" id="kUpcoming">-</div></div>
+      <div class="stat"><div class="k">Completed</div><div class="v" id="kCompleted">-</div></div>
+    </div>
+
+    <div class="card" style="margin-top:12px;">
+      <h3>By Room Type</h3>
+      <div id="byRoomType" class="muted">Loading...</div>
+    </div>
+  </section>
+
+  <!-- ADD -->
+  <section id="tabAdd" class="panel" hidden>
+    <div class="split">
+      <div class="card">
+        <h3>Add New Reservation</h3>
+        <p class="muted">Reservation No will auto-fill. If contact exists, guest will be reused.</p>
+
+        <form id="formAdd" class="grid2">
+          <label class="field">
+            <span>Reservation No</span>
+            <div class="row">
+              <input id="resNo" class="grow" placeholder="Auto"/>
+              <button class="btn btnGhost" id="btnNewNo" type="button">New</button>
+            </div>
+          </label>
+
+          <label class="field">
+            <span>Room Type</span>
+            <select id="roomType" required><option value="">-- select --</option></select>
+          </label>
+
+          <label class="field">
+            <span>Check-in</span>
+            <input id="checkIn" type="date" required/>
+          </label>
+
+          <label class="field">
+            <span>Check-out</span>
+            <input id="checkOut" type="date" required/>
+          </label>
+
+          <label class="field">
+            <span>Guest Name</span>
+            <input id="guestName" placeholder="Enter guest name"/>
+          </label>
+
+          <label class="field">
+            <span>Contact No</span>
+            <input id="contactNo" placeholder="Enter contact number" required/>
+          </label>
+
+          <label class="field full">
+            <span>Address</span>
+            <input id="address" placeholder="Enter address"/>
+          </label>
+
+          <div class="row" style="margin-top:10px;flex-wrap:wrap;">
+            <button class="btn" type="submit">Save Reservation</button>
+            <button class="btn btnGhost" id="btnClearAdd" type="button">Clear</button>
+          </div>
+        </form>
+
+        <div id="addMsg" class="muted" style="margin-top:10px;">No reservation created yet.</div>
+      </div>
+
+      <div class="card">
+        <h3>Quick: Reservation List</h3>
+        <div class="muted">Use Manage tab for update/delete.</div>
+        <div class="row" style="margin-top:10px;flex-wrap:wrap;">
+          <button class="btn btnGhost" id="btnGoManage" type="button">Open Manage</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MANAGE -->
+  <section id="tabManage" class="panel" hidden>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+      <div>
+        <h2>Manage Reservations</h2>
+        <div class="muted">Filter by room type + status. Use Edit/Delete buttons.</div>
+      </div>
+      <button class="btn btnGhost" id="btnManageRefresh" type="button">Refresh</button>
+    </div>
+
+    <div class="card" style="margin-top:12px;">
+      <div class="grid2">
+        <label class="field">
+          <span>Status</span>
+          <select id="filterStatus">
+            <option value="all">All</option>
+            <option value="active">Active</option>
+            <option value="upcoming">Upcoming</option>
+            <option value="completed">Completed</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Room Type</span>
+          <select id="filterRoomType"><option value="">All Room Types</option></select>
+        </label>
+
+        <label class="field full">
+          <span>Search (Reservation No / Guest / Contact)</span>
+          <input id="filterSearch" placeholder="Type to search..." />
+        </label>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px;">
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Reservation No</th>
+              <th>Guest</th>
+              <th>Contact</th>
+              <th>Room Type</th>
+              <th>Check-in</th>
+              <th>Check-out</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="manageTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- GUESTS -->
+  <section id="tabGuests" class="panel" hidden>
+    <h2>Guest Details</h2>
+    <div class="card">
+      <div class="row">
+        <input id="guestContactSearch" class="grow" placeholder="Contact No (ex: 0771234567)" />
+        <button class="btn" id="btnLoadGuest" type="button">Load</button>
+        <input id="guestId" type="hidden" />
+      </div>
+
+      <div class="grid2" style="margin-top:12px;">
+        <label class="field"><span>Name</span><input id="gName"/></label>
+        <label class="field"><span>Contact No</span><input id="gContact"/></label>
+        <label class="field full"><span>Address</span><input id="gAddress"/></label>
+      </div>
+
+      <div class="row" style="margin-top:12px;flex-wrap:wrap;">
+        <button class="btn" id="btnUpdateGuest" type="button">Update Guest</button>
+        <button class="btn btnDanger" id="btnDeleteGuest" type="button">Delete Guest</button>
+        <button class="btn btnGhost" id="btnForceDeleteGuest" type="button">Force Delete</button>
+      </div>
+
+      <div id="guestMsg" class="muted" style="margin-top:10px;">Load a guest to edit.</div>
+    </div>
+  </section>
+
+  <!-- ROOM TYPES -->
+  <section id="tabRooms" class="panel" hidden>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+      <div>
+        <h2>Room Types Manage</h2>
+        <div class="muted">Click a row to fill the form. Save to create/update.</div>
+      </div>
+      <button class="btn btnGhost" id="btnRoomsRefresh" type="button">Refresh</button>
+    </div>
+
+    <div class="card" style="margin-top:12px;">
+      <div class="tableWrap">
+        <table style="min-width:520px;">
+          <thead>
+            <tr>
+              <th>Type Name</th>
+              <th>Rate Per Night</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody id="roomsTbody"></tbody>
+        </table>
+      </div>
+
+      <hr />
+
+      <h3>Add / Update Room Type</h3>
+      <div class="grid2">
+        <label class="field"><span>Type Name</span><input id="rtName" placeholder="Standard"/></label>
+        <label class="field"><span>Rate Per Night</span><input id="rtRate" type="number" min="0" step="0.01" placeholder="12000"/></label>
+      </div>
+      <div class="row" style="margin-top:12px;flex-wrap:wrap;">
+        <button class="btn" id="btnRoomSave" type="button">Save (Create/Update)</button>
+        <button class="btn btnGhost" id="btnRoomClear" type="button">Clear</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- USERS -->
+  <section id="tabUsers" class="panel" hidden>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+      <div>
+        <h2>Users Manage</h2>
+        <div class="muted">Create users, change roles, reset passwords, delete users (Admin only).</div>
+      </div>
+      <button class="btn btnGhost" id="btnUsersRefresh" type="button">Refresh</button>
+    </div>
+
+    <div class="card" style="margin-top:12px;">
+      <div class="grid2">
+        <label class="field full">
+          <span>Search (username)</span>
+          <input id="userSearch" placeholder="Type username to search..." />
+        </label>
+      </div>
+
+      <div class="tableWrap" style="margin-top:12px;">
+        <table style="min-width:600px;">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Role</th>
+              <th style="width:260px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="usersTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px;">
+      <h3>Create / Update User</h3>
+      <p class="muted">Click a row to select a user. For update, username stays same.</p>
+
+      <div id="usersMsg" class="muted">No user selected.</div>
+
+      <div class="grid2" style="margin-top:12px;">
+        <label class="field">
+          <span>Username</span>
+          <input id="uUsername" placeholder="reception2" />
+        </label>
+
+        <label class="field">
+          <span>Role</span>
+          <select id="uRole">
+            <option value="RECEPTIONIST">RECEPTIONIST</option>
+            <option value="ADMIN">ADMIN</option>
+          </select>
+        </label>
+
+        <label class="field full">
+          <span>Password (only for create or reset)</span>
+          <input id="uPassword" type="password" placeholder="Enter password (ex: recep123)" />
+        </label>
+      </div>
+
+      <div class="row" style="margin-top:12px;flex-wrap:wrap;">
+        <button class="btn" id="btnUserCreate" type="button">Create User</button>
+        <button class="btn btnGhost" id="btnUserUpdateRole" type="button">Update Role</button>
+        <button class="btn btnGhost" id="btnUserResetPw" type="button">Reset Password</button>
+        <button class="btn btnDanger" id="btnUserDelete" type="button">Delete User</button>
+        <button class="btn btnGhost" id="btnUserClear" type="button">Clear</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- HELP -->
+  <section id="tabHelp" class="panel" hidden>
+    <h2>Help</h2>
+
+    <div class="helpTop">
+      <button class="btn btnGhost" id="btnHelpApi" type="button">Load Help from API</button>
+      <span class="badge">New Admin Guide</span>
+    </div>
+
+    <div class="helpCols">
+      <div class="helpCard">
+        <h3>Admin Quick Start</h3>
+        <ol>
+          <li>Login with your <b>ADMIN</b> account.</li>
+          <li>Check <b>Dashboard</b> for quick reservation counts.</li>
+          <li>Use <b>Add Reservation</b> to create new bookings.</li>
+          <li>Use <b>Update/Delete Reservations</b> to edit or remove bookings.</li>
+          <li>Use <b>Guest Details</b> to update guest name, contact, and address.</li>
+        </ol>
+      </div>
+
+      <div class="helpCard">
+        <h3>Daily Admin Tasks</h3>
+        <ul>
+          <li><b>Room Types (CRUD):</b> Add / update room type and rate per night.</li>
+          <li><b>Users (CRUD):</b> Create receptionist accounts, change roles, reset passwords.</li>
+          <li><b>Search:</b> Use reservation number / guest / contact search to find fast.</li>
+          <li><b>Refresh:</b> Press Refresh buttons after changes.</li>
+        </ul>
+      </div>
+
+      <div class="helpCard full">
+        <h3>Step-by-step: Add a Reservation</h3>
+        <ol>
+          <li>Open <b>Add Reservation</b>.</li>
+          <li>Click <b>New</b> to generate a reservation number automatically.</li>
+          <li>Select <b>Room Type</b>.</li>
+          <li>Select <b>Check-in</b> and <b>Check-out</b> dates.</li>
+          <li>Enter <b>Guest Name</b>, <b>Contact No</b> and <b>Address</b>.</li>
+          <li>Click <b>Save Reservation</b>.</li>
+          <li>Go to <b>Update/Delete Reservations</b> to confirm it is listed.</li>
+        </ol>
+      </div>
+
+      <div class="helpCard full">
+        <h3>Troubleshooting</h3>
+        <ul>
+          <li><b>Reservation not visible?</b> Click <b>Refresh</b> and check filters like Status and Room Type.</li>
+          <li><b>Cannot update guest?</b> Load guest using contact number first, then click <b>Update Guest</b>.</li>
+          <li><b>Room type missing?</b> Add it in <b>Room Types (CRUD)</b> and refresh the page section.</li>
+          <li><b>Login issue?</b> Reset the password from <b>Users (CRUD)</b>.</li>
+        </ul>
+      </div>
+    </div>
+
+    <hr />
+
+    <pre id="helpText" class="helpBox">Click "Load Help from API"</pre>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footerInner">Ocean View Resort ©</div>
+</footer>
+
+<!-- Edit modal -->
+<div id="modalBackdrop" class="modalBackdrop">
+  <div class="modal">
+    <div class="modalHead">
+      <div class="modalTitle" id="modalTitle">Edit Reservation</div>
+      <button class="btn btnGhost" id="btnModalClose" type="button">Close</button>
+    </div>
+    <div class="modalBody">
+      <div class="muted" id="modalHint">Update fields and click Save.</div>
+
+      <div class="grid2" style="margin-top:12px;">
+        <label class="field full">
+          <span>Reservation No</span>
+          <input id="mResNo" readonly />
+        </label>
+
+        <label class="field">
+          <span>Room Type</span>
+          <select id="mRoomType"><option value="">-- keep same --</option></select>
+        </label>
+
+        <label class="field">
+          <span>Guest ID (optional)</span>
+          <input id="mGuestId" type="number" min="1" placeholder="Leave empty to keep same"/>
+        </label>
+
+        <label class="field">
+          <span>Check-in</span>
+          <input id="mCheckIn" type="date"/>
+        </label>
+
+        <label class="field">
+          <span>Check-out</span>
+          <input id="mCheckOut" type="date"/>
+        </label>
+
+        <label class="field">
+          <span>Guest Name</span>
+          <input id="mGuestName"/>
+        </label>
+
+        <label class="field">
+          <span>Contact No</span>
+          <input id="mContact"/>
+        </label>
+
+        <label class="field full">
+          <span>Address</span>
+          <input id="mAddress"/>
+        </label>
+      </div>
+
+      <div class="row" style="margin-top:12px;flex-wrap:wrap;">
+        <button class="btn" id="btnModalSave" type="button">Save Update</button>
+        <button class="btn btnDanger" id="btnModalDelete" type="button">Delete Reservation</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="./common.js"></script>
+<script src="./admin.js"></script>
+</body>
+</html>
